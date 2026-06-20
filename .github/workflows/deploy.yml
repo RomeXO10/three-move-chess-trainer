@@ -1,0 +1,66 @@
+name: Deploy to GitHub Pages
+
+# Builds and publishes the static site to GitHub Pages.
+# Pages "Source" must be set to "GitHub Actions" (Settings → Pages).
+on:
+  push:
+    branches:
+      - main
+      - master
+      - claude/chess-training-tool-fyc5ch
+  workflow_dispatch:
+
+# Permissions required by the Pages deployment action.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-progress publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate JavaScript (syntax check)
+        run: |
+          set -e
+          for f in js/*.js; do
+            echo "Checking $f"
+            node --check "$f"
+          done
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp index.html finder.html README.md _site/
+          cp -r css js _site/
+          # Skip Jekyll processing so files/dirs are served as-is.
+          touch _site/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
