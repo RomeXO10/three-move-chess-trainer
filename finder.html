@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scenario Finder — Three-Move Chess Trainer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">♞ Three-Move Trainer</div>
+    <nav>
+      <a class="navlink" href="index.html">Trainer</a>
+      <a class="navlink active" href="finder.html">Scenario Finder</a>
+    </nav>
+  </header>
+
+  <main class="finder-layout">
+    <section class="finder-controls">
+      <h2>Find "no clear best move" positions</h2>
+      <p class="muted">
+        Paste master games (PGN). Stockfish scans each position and keeps the ones
+        where the top moves are bunched together in evaluation — genuine choices
+        with no single obvious best move.
+      </p>
+
+      <label class="field">
+        <span>Master games (PGN)</span>
+        <textarea id="pgn" rows="10" spellcheck="false"></textarea>
+      </label>
+      <div class="row">
+        <button id="load-sample" class="btn ghost small">Load sample games</button>
+        <label class="file-btn btn ghost small">Load .pgn file
+          <input id="pgn-file" type="file" accept=".pgn,.txt" hidden>
+        </label>
+      </div>
+
+      <div class="params">
+        <label class="field small">
+          <span>Closeness (cp)</span>
+          <input id="threshold" type="number" min="5" max="100" value="35">
+        </label>
+        <label class="field small">
+          <span>Cluster size</span>
+          <input id="cluster" type="number" min="3" max="5" value="4">
+        </label>
+        <label class="field small">
+          <span>Depth</span>
+          <input id="depth" type="number" min="6" max="20" value="12">
+        </label>
+        <label class="field small">
+          <span>Max |eval| (cp)</span>
+          <input id="maxadv" type="number" min="50" max="400" value="180">
+        </label>
+        <label class="field small">
+          <span>Min ply</span>
+          <input id="minply" type="number" min="1" max="80" value="12">
+        </label>
+        <label class="field small">
+          <span>Max ply</span>
+          <input id="maxply" type="number" min="2" max="160" value="70">
+        </label>
+        <label class="field small">
+          <span>Max results</span>
+          <input id="maxresults" type="number" min="1" max="50" value="12">
+        </label>
+      </div>
+
+      <div class="row">
+        <button id="run" class="btn primary">Scan games</button>
+        <button id="stop" class="btn ghost" disabled>Stop</button>
+        <button id="send-all" class="btn ghost" disabled>Send all to Trainer</button>
+        <button id="export" class="btn ghost" disabled>Export JSON</button>
+        <button id="clear-store" class="btn ghost">Clear saved</button>
+      </div>
+
+      <div id="progress" class="progress"></div>
+      <div id="finder-status" class="muted"></div>
+      <div class="muted small">Engine: <span id="engine-src">loading…</span></div>
+    </section>
+
+    <section class="finder-results">
+      <h2>Candidates <span id="result-count" class="count">0</span></h2>
+      <div id="results" class="results"></div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/scenarios.js"></script>
+  <script src="js/finder.js"></script>
+</body>
+</html>

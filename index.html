@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Three-Move Chess Trainer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">♞ Three-Move Trainer</div>
+    <nav>
+      <a class="navlink active" href="index.html">Trainer</a>
+      <a class="navlink" href="finder.html">Scenario Finder</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="board-col">
+      <div id="board" class="cmt-board"></div>
+      <div class="board-controls">
+        <span id="turn-indicator" class="turn-indicator">White to move</span>
+        <button id="flip" class="btn ghost">Flip</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="scenario-head">
+        <div>
+          <select id="scenario-select" class="select"></select>
+        </div>
+        <div class="scenario-meta">
+          <div id="scenario-name" class="scenario-name"></div>
+          <div id="scenario-source" class="scenario-source"></div>
+        </div>
+        <div class="nav-row">
+          <button id="prev" class="btn ghost">‹ Prev</button>
+          <button id="shuffle" class="btn ghost">Shuffle</button>
+          <button id="next" class="btn ghost">Next ›</button>
+        </div>
+      </div>
+
+      <div class="instructions">
+        Pick the <strong>top three moves</strong> Stockfish would consider best.
+        Click a piece, then its destination. Choose up to 3 candidate moves, then submit.
+      </div>
+
+      <div class="picks-box">
+        <div class="picks-header">
+          <span>Your picks (<span id="pick-count">0</span>/3)</span>
+          <button id="reset-picks" class="btn ghost small">Clear</button>
+        </div>
+        <ol id="picks" class="picks"></ol>
+      </div>
+
+      <div class="actions">
+        <label class="depth-label">Depth
+          <input id="depth" type="number" min="6" max="24" value="14" class="depth-input">
+        </label>
+        <button id="submit" class="btn primary" disabled>Submit &amp; Score</button>
+      </div>
+
+      <div id="engine-status" class="engine-status"></div>
+      <div id="result" class="result"></div>
+      <div id="engine-lines" class="engine-lines"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Engine: <span id="engine-src">Stockfish (loading…)</span> ·
+    Runs entirely in your browser.
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/scenarios.js"></script>
+  <script src="js/trainer.js"></script>
+</body>
+</html>
