@@ -9,15 +9,22 @@
 (function (global) {
   'use strict';
 
-  var GLYPHS = {
-    wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
-    bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
-  };
   var FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+  // Where the vendored SVG piece set lives, relative to the HTML pages.
+  var PIECE_PATH = 'pieces/';
+
+  function makeCoord(kind, text) {
+    var s = document.createElement('span');
+    s.className = 'coord ' + kind;
+    s.textContent = text;
+    return s;
+  }
 
   function Board(container, opts) {
     opts = opts || {};
     this.el = container;
+    this.showCoords = opts.coords !== false;
     this.flipped = false;
     this.fen = null;
     this.chess = null;
@@ -93,11 +100,19 @@
     if (!this.fen) return;
     var board = this.fen.split(' ')[0];
     var rows = board.split('/');
-    // Clear cells
+    // Clear cells (pieces, coordinate labels) and transient classes.
     for (var key in this.squares) {
       var c = this.squares[key];
       c.textContent = '';
-      c.className = c.className.replace(/\s*(sel|legal|mk-[\w-]+)/g, '');
+      c.className = c.className.replace(/\s*(sel|legal|legal-capture|mk-[\w-]+)/g, '');
+      // Coordinate labels on the board edges (chess.com style).
+      if (this.showCoords) {
+        var parts = key.split(',');
+        var gr = parseInt(parts[0], 10), gf = parseInt(parts[1], 10);
+        var alg = this._squareFor(c);
+        if (gf === 0) c.appendChild(makeCoord('rank', alg[1]));
+        if (gr === 7) c.appendChild(makeCoord('file', alg[0]));
+      }
     }
     for (var rank = 0; rank < 8; rank++) {
       var row = rows[rank];
@@ -109,21 +124,22 @@
         var piece = color + ch.toUpperCase();
         var square = FILES[file] + (8 - rank);
         var cell = this._cellFor(square);
-        var span = document.createElement('span');
-        span.className = 'piece ' + (color === 'w' ? 'white' : 'black');
-        span.textContent = GLYPHS[piece] || '?';
-        cell.appendChild(span);
+        var pe = document.createElement('div');
+        pe.className = 'piece p-' + piece;
+        pe.style.backgroundImage = 'url("' + PIECE_PATH + piece + '.svg")';
+        cell.appendChild(pe);
         file++;
       }
     }
-    // Selection + legal targets
+    // Selection + legal targets (captures get a ring instead of a dot).
     if (this.selected) {
       var selCell = this._cellFor(this.selected);
       if (selCell) selCell.className += ' sel';
       var moves = this.chess ? this.chess.moves({ square: this.selected, verbose: true }) : [];
       for (var m = 0; m < moves.length; m++) {
         var tc = this._cellFor(moves[m].to);
-        if (tc) tc.className += ' legal';
+        if (tc) tc.className += moves[m].flags.indexOf('c') !== -1 || moves[m].flags.indexOf('e') !== -1
+          ? ' legal-capture' : ' legal';
       }
     }
     // External markers

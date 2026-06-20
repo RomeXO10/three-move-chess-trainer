@@ -7,7 +7,13 @@ to surface positions where there is *no single obvious best move* (the top 3–5
 moves are bunched together in evaluation), which make the most interesting puzzles.
 
 Everything runs in the browser. No backend, no build step. Stockfish runs as a
-Web Worker, and chess.js handles move legality.
+Web Worker, and chess.js handles move legality. The board uses a chess.com-style
+green/cream theme with real SVG pieces and coordinate labels.
+
+All third-party libraries (Stockfish, chess.js) and the piece graphics are
+**vendored locally** under `js/vendor/` and `pieces/`, so the app works fully
+offline — no CDN needed at runtime. (The engine wrapper keeps CDN URLs as a
+fallback only.)
 
 ## Run it
 
@@ -22,8 +28,8 @@ python3 -m http.server 8000
 You can also open `index.html` directly, but a local server is recommended so the
 Stockfish engine (fetched from a CDN and wrapped in a Web Worker) loads cleanly.
 
-> **Network note:** Stockfish and chess.js are loaded from public CDNs at runtime.
-> The first analysis needs a network connection. Found scenarios are stored in
+> **Offline note:** Stockfish, chess.js and the piece graphics are bundled in the
+> repo, so the app runs without any network access. Found scenarios are stored in
 > `localStorage`, so once discovered they replay instantly.
 
 ## Trainer (`index.html`)
@@ -87,6 +93,8 @@ js/board.js       Dependency-free board widget (Unicode pieces)
 js/scenarios.js   Built-in scenarios, sample PGN, localStorage store
 js/trainer.js     Trainer game logic
 js/finder.js      PGN scanning + qualification logic
+js/vendor/        Vendored chess.js + stockfish.js
+pieces/           SVG chess piece set (cburnett)
 ```
 
 ## How scoring works
@@ -99,8 +107,10 @@ their average.
 
 ## Credits
 
-- [Stockfish](https://stockfishchess.org/) (via `stockfish.js`, loaded from CDN)
+- [Stockfish](https://stockfishchess.org/) (via `stockfish.js`, vendored locally)
 - [chess.js](https://github.com/jhlywa/chess.js) for move generation and PGN parsing
+- Piece graphics: the **cburnett** SVG set by Colin M.L. Burnett (GPLv2+), as used
+  by Lichess
 
 Sample games: Kasparov–Topalov (Wijk aan Zee 1999) and Karpov–Kasparov
 (Linares 1993), included for demonstration.

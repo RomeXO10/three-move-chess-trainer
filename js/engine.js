@@ -12,8 +12,10 @@
 
   // Candidate engine sources, tried in order. All single-file asm.js builds that
   // run directly as a Web Worker. Fetched as text then wrapped in a blob URL to
-  // dodge cross-origin Worker restrictions.
+  // dodge cross-origin Worker restrictions. The local vendored copy is tried
+  // first so the app works offline; CDNs are fallbacks.
   var ENGINE_URLS = [
+    'js/vendor/stockfish.js',
     'https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js',
     'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js',
     'https://unpkg.com/stockfish.js@10.0.2/stockfish.js'
